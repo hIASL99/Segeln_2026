@@ -205,14 +205,23 @@ if (
 ):
 	st.session_state["selected_csv_name"] = default_csv_name
 
-if len(csv_names) > 1:
-	selected_csv_name = st.sidebar.selectbox(
-		"Question file", options=csv_names, key="selected_csv_name"
-	)
-else:
-	selected_csv_name = csv_names[0]
-	st.session_state["selected_csv_name"] = selected_csv_name
-	st.sidebar.caption(f"Question file: {selected_csv_name}")
+def quiz_label(csv_name: str) -> str:
+	return Path(csv_name).stem.replace("_", " ")
+
+
+with st.sidebar:
+	st.subheader("Quiz")
+	if len(csv_names) > 1:
+		selected_csv_name = st.selectbox(
+			"Choose quiz",
+			options=csv_names,
+			format_func=quiz_label,
+			key="selected_csv_name",
+		)
+	else:
+		selected_csv_name = csv_names[0]
+		st.session_state["selected_csv_name"] = selected_csv_name
+		st.caption(f"Only one quiz available: {quiz_label(selected_csv_name)}")
 
 selected_csv_path = DATA_DIR / selected_csv_name
 
