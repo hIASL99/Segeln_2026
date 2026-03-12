@@ -129,9 +129,12 @@ def clear_choice_keys() -> None:
 
 def reset_quiz_runtime() -> None:
 	total_questions = len(st.session_state["questions"])
-	st.session_state["question_order"] = random.sample(
-		range(total_questions), total_questions
-	)
+	if st.session_state.get("shuffle_questions", False):
+		st.session_state["question_order"] = random.sample(
+			range(total_questions), total_questions
+		)
+	else:
+		st.session_state["question_order"] = list(range(total_questions))
 	st.session_state["current_question_pos"] = 0
 	st.session_state["score"] = 0
 	st.session_state["checked_questions"] = {}
@@ -298,6 +301,11 @@ with st.sidebar:
 		else:
 			st.session_state["current_question_pos"] = target_position
 			st.rerun()
+
+	st.subheader("Settings")
+	if "shuffle_questions" not in st.session_state:
+		st.session_state["shuffle_questions"] = False
+	st.toggle("Shuffle questions", key="shuffle_questions")
 
 	if st.button("Restart quiz"):
 		reset_quiz_runtime()
